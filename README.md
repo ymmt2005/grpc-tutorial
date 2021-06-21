@@ -545,6 +545,10 @@ $ echo $?
 `Infer` メソッドを呼び出すのは皆さんの課題にしておきます。
 [`context.WithTimeout`](https://golang.org/pkg/context/#WithTimeout) でデッドラインを指定してサーバーの挙動が変わるのを確認してみてください。
 
+デッドラインの指定の仕方は以下の記事にまとまっています。
+
+- [gRPC and Deadlines](https://grpc.io/blog/deadlines/)
+
 ### （発展）他の人の実装と通信してみよう
 
 自分が作ったサーバーもしくはクライアントと、他の人が作ったサーバーもしくはクライアントで通信してみましょう。
@@ -684,11 +688,29 @@ Go の場合、以下のようにクライアントのコードを変更して K
 	conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithKeepaliveParams(kp))
 ```
 
-ref. https://github.com/grpc/grpc-go/blob/master/Documentation/keepalive.md
-
 Java の場合 [`ManagedChannelBuilder.keepAliveTime`](https://grpc.github.io/grpc-java/javadoc/io/grpc/ManagedChannelBuilder.html#keepAliveTime-long-java.util.concurrent.TimeUnit-) で指定します。
 
 Node の場合[こちらのブログ記事](https://kiririmode.hatenablog.jp/entry/20190512/1557619277)が詳しいです。
+
+さて、このまま動かすと RPC に時間がかかるときにサーバーが以下のようなエラーを出して失敗してしまいます。
+
+> failed to clone data: failed to clone data from 10.x.y.z: rpc error: code = Unknown desc = closing transport due to: connection error: desc = "error reading from server: EOF", received prior goaway: code: ENHANCE_YOUR_CALM, debug data: too_many_pings
+
+設定された閾値（デフォルトは 5 分）より短い間隔で PING フレームを送るとこのエラーが発生してしまいます。
+上記のクライアントは 1 分毎に PING を送るため、エラーになったわけです。
+
+この閾値を調整するには、サーバーを以下のように修正します。
+
+```go
+func main() {
+	kep := keepalive.EnforcementPolicy{
+		MinTime: 10 * time.Second,
+	}
+	serv := grpc.NewServer(grpc.KeepaliveEnforcementPolicy(kep))
+...
+```
+
+ref. https://github.com/grpc/grpc-go/blob/master/Documentation/keepalive.md
 
 ### テスト
 
