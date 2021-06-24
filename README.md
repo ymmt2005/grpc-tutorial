@@ -32,6 +32,7 @@
 	- [大容量データ](#大容量データ)
 	- [UNIX ドメインソケットでの通信](#unix-ドメインソケットでの通信)
 	- [ブラウザからの利用](#ブラウザからの利用)
+	- [FAQ](#faq)
 
 ## 内容について
 
@@ -1027,6 +1028,11 @@ Neco が採用しているロードバランサー [Contour でも利用可能](
 
 gRPC Web はクライアントを JavaScript コードとして生成するので、JavaScript 専用です。
 gRPC Gateway は REST API にマッピングするので、任意の言語からアクセスできます。
+
+### FAQ
+
+研修中にいただいた質問について、[FAQ.md](FAQ.md) に回答をまとめています。
+こちらも読んでいただくとさらに理解が深まります。
 
 [grpc.io]: https://grpc.io/
 [grpc.github.io]: https://grpc.github.io/grpc/core/pages.html
