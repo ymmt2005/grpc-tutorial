@@ -455,9 +455,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"time"
-	"io"
 
 	"github.com/ymmt2005/grpc-tutorial/go/deepthought"
 	"google.golang.org/grpc"
